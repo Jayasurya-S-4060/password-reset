@@ -5,7 +5,6 @@ import {
   Routes,
   Route,
   Link,
-  useParams,
   useNavigate,
   useLocation,
 } from "react-router-dom";
@@ -18,9 +17,9 @@ import userLogin from "./services/userLogin";
 
 function App() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="flex bg-white p-8 rounded-2xl shadow-lg text-center space-x-4 w-[60rem]">
-        <div className="flex justify-center mb-4">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div className="flex flex-col md:flex-row bg-white p-6 md:p-8 rounded-2xl shadow-lg text-center w-full max-w-lg md:max-w-3xl">
+        <div className="flex justify-center mb-4 md:mb-0 md:mr-4">
           <LoginIcon />
         </div>
         <div className="w-full">
@@ -48,6 +47,13 @@ const registerValidationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
+    .matches(
+      /[@$!%*?&#]/,
+      "Password must contain at least one special character (@$!%*?&#)"
+    )
     .required("Required"),
 });
 
@@ -61,20 +67,16 @@ const LoginForm = () => {
         validationSchema={loginValidationSchema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           setSubmitting(true);
-
           try {
-            const resp = await userLogin(values);
-            localStorage.setItem("token", resp.data.user.token);
-            alert(`Successfully logged in as ${resp.data.user.userName}`);
-
-            resetForm();
+            const userData = await userLogin(values);
+            localStorage.setItem("token", userData.user.token);
+            alert(`Successfully logged in as ${userData.user.userName}`);
           } catch (err) {
-            console.error("Login failed:", err);
-
+            const errorMessage =
+              err.response?.data?.message || "Something went wrong.";
             notification.error({
               message: "Login Failed",
-              description:
-                err.message || "Something went wrong, please try again.",
+              description: errorMessage,
             });
           } finally {
             setSubmitting(false);
