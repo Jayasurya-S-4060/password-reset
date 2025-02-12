@@ -80,6 +80,7 @@ const LoginForm = () => {
             });
           } finally {
             setSubmitting(false);
+            resetForm();
           }
         }}
       >
