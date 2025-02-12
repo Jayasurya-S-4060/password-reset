@@ -155,9 +155,11 @@ const RegisterForm = () => {
             });
             resetForm();
           } catch (err) {
+            const errorMessage =
+              err.response?.data?.message || "Something went wrong.";
             notification.error({
-              message: "Registration Failed",
-              description: "Something went wrong, please try again.",
+              message: "Login Failed",
+              description: errorMessage,
             });
           } finally {
             setSubmitting(false);

@@ -8,12 +8,9 @@ async function registerUser(params) {
         "Content-Type": "application/json",
       },
     });
-    console.log("User registered:", response.data);
   } catch (error) {
-    console.error(
-      "Error registering user:",
-      error.response ? error.response.data : error.message
-    );
+    console.error("Login Error:", error.response?.data || error.message);
+    throw error;
   }
 }
 
